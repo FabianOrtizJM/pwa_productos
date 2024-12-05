@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Productos</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #ff0000, #0000ff);
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .product-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+
+        .product-container {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 1000px;
+            margin: 5rem auto;
+        }
+
+        .btn-new-product {
+            background: linear-gradient(90deg, #4e54c8, #8f94fb);
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        .btn-new-product:hover {
+            background: linear-gradient(90deg, #8f94fb, #4e54c8);
+        }
+
+        .table thead th {
+            background: linear-gradient(90deg, #4e54c8, #8f94fb);
+            color: white;
+            border: none;
+        }
+
+        .table tbody tr td {
+            background: #f7f7f7;
+            border: none;
+        }
+
+        .table tbody tr {
+            border-bottom: 1px solid #ddd;
+        }
+
+        .table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        .action-icons .edit-icon {
+            color: orange;
+        }
+
+        .action-icons .delete-icon {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">LP</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="categorias.html">Categorías</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Productos</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="product-container">
+        <div class="product-header d-flex justify-content-between align-items-center">
+            <h1>Lista de Productos</h1>
+            <a href="AddProducto.html"><button class="btn btn-new-product">Nuevo Producto</button></a>
+        </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Precio</th>
+                    <th>Categoría</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Producto 1</td>
+                    <td>Descripción del producto 1</td>
+                    <td>100</td>
+                    <td>Electrónica</td>
+                    <td class="action-icons">
+                        <i class="bi bi-pencil-fill edit-icon"></i>
+                        <i class="bi bi-trash-fill delete-icon"></i>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Producto 2</td>
+                    <td>Descripción del producto 2</td>
+                    <td>200.5</td>
+                    <td>Muebles</td>
+                    <td class="action-icons">
+                        <i class="bi bi-pencil-fill edit-icon"></i>
+                        <i class="bi bi-trash-fill delete-icon"></i>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Producto 3</td>
+                    <td>Descripción del producto 3</td>
+                    <td>50</td>
+                    <td>Ropa</td>
+                    <td class="action-icons">
+                        <i class="bi bi-pencil-fill edit-icon"></i>
+                        <i class="bi bi-trash-fill delete-icon"></i>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+</body>
+
+</html>
