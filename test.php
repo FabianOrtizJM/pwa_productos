@@ -10,7 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-require 'db.php';
+require 'db.php';  // Asegúrate de que 'db.php' tenga la configuración correcta de la base de datos
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Obtener los datos del formulario
@@ -28,6 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
 
     try {
+        // Inserción en la base de datos
         $stmt = $pdo->prepare('INSERT INTO usuarios (nombre, correo, password) VALUES (:username, :email, :password)');
         $stmt->execute([
             ':username' => $username,
@@ -36,8 +37,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ]);
         echo json_encode(['success' => 'Usuario registrado con éxito.']);
     } catch (PDOException $e) {
-        if ($e->getCode() === '23000') { // Código para violación de clave única
-            echo json_encode(['error' => 'El usuario o email ya están registrados.']);
+        // Manejo de errores
+        if ($e->getCode() === '23000') { // Violación de clave única (usuario o correo ya existen)
+            echo json_encode(['error' => 'El usuario o el correo ya están registrados.']);
         } else {
             echo json_encode(['error' => 'Error al registrar el usuario.']);
         }
