@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crear Categoría</title>
     <!-- Bootstrap CSS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -71,10 +73,6 @@
         .btn-submit:hover {
             background: linear-gradient(90deg, #8f94fb, #4e54c8);
         }
-
-        .alert {
-            margin-top: 1rem;
-        }
     </style>
 </head>
 
@@ -89,7 +87,7 @@
         <div class="form-header">
             <h1>Crear Categoría</h1>
         </div>
-        <form id="categoriaForm">
+        <form id="formCrearCategoria">
             <div class="mb-3">
                 <input type="text" class="form-control" id="nombreCategoria" placeholder="Nombre de la Categoría" required>
             </div>
@@ -98,52 +96,14 @@
             </div>
             <button type="submit" class="btn btn-submit">Guardar Categoría</button>
         </form>
-        <div id="alertContainer" class="alert d-none" role="alert"></div>
+        
     </div>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="../api.js"></script>
+    
 
-    <script type="module">
-        import { addCategoria } from '/api.js'; // Asegúrate de que este archivo esté en tu proyecto
-
-        const form = document.getElementById('categoriaForm');
-        const alertContainer = document.getElementById('alertContainer');
-
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const nombre = document.getElementById('nombreCategoria').value.trim();
-            const descripcion = document.getElementById('descripcionCategoria').value.trim();
-
-            if (!nombre || !descripcion) {
-                showAlert('Por favor, completa todos los campos.', 'danger');
-                return;
-            }
-
-            try {
-                const data = { name: nombre, description: descripcion };
-                const response = await addCategoria(data);
-
-                if (response.error) {
-                    showAlert(response.error, 'danger');
-                } else {
-                    showAlert('Categoría añadida exitosamente.', 'success');
-                    form.reset(); 
-                }
-            } catch (error) {
-                console.error('Error al añadir la categoría:', error);
-                showAlert('Ocurrió un error al añadir la categoría. Inténtalo más tarde.', 'danger');
-            }
-        });
-
-        function showAlert(message, type) {
-            alertContainer.className = `alert alert-${type}`;
-            alertContainer.innerText = message;
-            alertContainer.classList.remove('d-none');
-
-            setTimeout(() => {
-                alertContainer.classList.add('d-none');
-            }, 5000);
-        }
-    </script>
 </body>
 
 </html>

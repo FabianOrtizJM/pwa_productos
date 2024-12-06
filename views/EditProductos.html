@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Producto</title>
+    <!-- Bootstrap CSS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #ff0000, #0000ff);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+        }
+
+        .form-container {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .btn-back {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: none;
+            border: none;
+            color: #4e54c8;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .btn-back:hover {
+            color: #8f94fb;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-header h1 {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .form-control {
+            padding: 1rem;
+            font-size: 1rem;
+        }
+
+        .btn-submit {
+            background: linear-gradient(90deg, #4e54c8, #8f94fb);
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            width: 100%;
+        }
+
+        .btn-submit:hover {
+            background: linear-gradient(90deg, #8f94fb, #4e54c8);
+        }
+    </style>
+</head>
+
+<<body>
+    <div class="form-container">
+        <!-- Botón de regreso -->
+        <a href="Productos.html">
+            <button class="btn-back" title="Regresar a la lista">
+                <i class="bi bi-arrow-left-circle"></i>
+            </button>
+        </a>
+        <div class="form-header">
+            <h1>Editar Producto</h1>
+        </div>
+        <form id="formEditarProducto">
+            <div class="mb-3">
+                <input type="text" class="form-control" id="nombreProducto" placeholder="Nombre del Producto" required>
+            </div>
+            <div class="mb-3">
+                <input type="number" class="form-control" id="stockProducto" placeholder="Cantidad de Stock" required>
+            </div>
+            <div class="mb-3">
+                <input type="number" step="0.01" class="form-control" id="precioProducto" placeholder="Precio del Producto" required>
+            </div>
+            <div class="mb-3">
+                <select class="form-control" id="categoriaProducto" required>
+                    <option value="" disabled selected>Seleccione una categoría</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-submit">Guardar Cambios</button>
+        </form>
+    </div>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <script>
+        $(document).ready(function () {
+          const API_URL = "http://localhost:3000/api"; // Cambia si es necesario
+          const productId = new URLSearchParams(window.location.search).get("id"); // Obtener ID de la URL
+
+          // Función para cargar categorías desde la API
+          function cargarCategorias() {
+            $.ajax({
+              url: `${API_URL}/categories`,
+              method: "GET",
+              dataType: "json",
+              success: function (categorias) {
+                const select = $("#categoriaProducto");
+                select.empty();
+                select.append('<option value="" disabled selected>Seleccione una categoría</option>');
+                categorias.forEach((categoria) => {
+                  select.append(
+                    `<option value="${categoria.id}">${categoria.name}</option>`
+                  );
+                });
+              },
+              error: function (err) {
+                console.error("Error al cargar las categorías:", err);
+              },
+            });
+          }
+
+          // Función para cargar los datos del producto
+          function cargarProducto(id) {
+            $.ajax({
+                url: `${API_URL}/products`,
+                method: "GET",
+                dataType: "json",
+                success: function (response) {
+                console.log("Productos cargados:", response);
+
+                // Buscar el producto con el ID correcto
+                const producto = response.data.find((p) => p.id == id);
+
+                if (producto) {
+                    // Rellenar los campos con los datos del producto
+                    $("#nombreProducto").val(producto.name);
+                    $("#stockProducto").val(producto.stock);
+                    $("#precioProducto").val(producto.price);
+                    $("#categoriaProducto").val(producto.categoryId);
+                } else {
+                    alert("Producto no encontrado.");
+                    window.location.href = "Productos.html"; // Redirigir si no se encuentra
+                }
+                },
+                error: function (err) {
+                console.error("Error al cargar los productos:", err);
+                },
+            });
+            }
+
+
+          // Llamar a las funciones al cargar la página
+          cargarCategorias();
+          if (productId) {
+            cargarProducto(productId);
+          } else {
+            alert("No se encontró el ID del producto.");
+            window.location.href = "Productos.html"; // Redirigir si no hay ID
+          }
+
+          // Enviar los datos editados
+          $("#formEditarProducto").submit(function (e) {
+            e.preventDefault();
+
+            const nombreProducto = $("#nombreProducto").val();
+            const stockProducto = $("#stockProducto").val();
+            const precioProducto = $("#precioProducto").val();
+            const categoriaProducto = $("#categoriaProducto").val();
+
+            if (!nombreProducto || !stockProducto || !precioProducto || !categoriaProducto) {
+              alert("Todos los campos son obligatorios.");
+              return;
+            }
+
+            const productoEditado = {
+              name: nombreProducto,
+              stock: stockProducto,
+              price: precioProducto,
+              categoryId: categoriaProducto,
+            };
+
+            $.ajax({
+              url: `${API_URL}/products/${productId}`,
+              method: "PUT",
+              contentType: "application/json",
+              data: JSON.stringify(productoEditado),
+              success: function (response) {
+                alert("Producto actualizado exitosamente.");
+                window.location.href = "Productos.html";
+              },
+              error: function (err) {
+                console.error("Error al actualizar el producto:", err);
+                alert("Hubo un error al actualizar el producto.");
+              },
+            });
+          });
+        });
+      </script>
+</body>
+
+</html>
