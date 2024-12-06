@@ -16,23 +16,20 @@ try {
     if (!$databaseExists) {
         // Crear la base de datos si no existe
         $pdo->exec("CREATE DATABASE `$dbname` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
-        echo "Base de datos '$dbname' creada correctamente.<br>";
     }
 
     // Conectarse a la base de datos ya existente o recién creada
     $pdo->exec("USE `$dbname`");
 
     // Crear la tabla de usuarios si no existe
-    $pdo->exec("
-        CREATE TABLE IF NOT EXISTS usuarios (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            nombre VARCHAR(100) NOT NULL,
-            correo VARCHAR(100) NOT NULL UNIQUE,
-            password VARCHAR(255) NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        ) ENGINE=InnoDB;
-    ");
-    echo "Tabla 'usuarios' creada o ya existente.<br>";
+    $pdo->exec("CREATE TABLE IF NOT EXISTS usuarios (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        nombre VARCHAR(100) NOT NULL,
+        correo VARCHAR(100) NOT NULL UNIQUE,
+        password VARCHAR(255) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB;");
+
 } catch (PDOException $e) {
     die('Error al conectar o configurar la base de datos: ' . $e->getMessage());
 }
