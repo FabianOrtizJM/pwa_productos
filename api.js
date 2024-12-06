@@ -109,8 +109,7 @@ $('#formCrearCategoria').on('submit', function(e) {
   // Llamar a la API para agregar la categoría
   addCategoria(categoriaData)
     .done(function(response) {
-      alert('Categoría creada con éxito!');
-      window.location.href = 'views/Categorias.html'; 
+      alert('Categoría creada con éxito!'); 
       // Opcional: limpiar los campos del formulario
       $('#nombreCategoria').val('');
       $('#descripcionCategoria').val('');
