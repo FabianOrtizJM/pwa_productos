@@ -120,6 +120,11 @@
                     alertContainer.classList.add('alert-success');
                     alertContainer.innerText = result.success;
                     alertContainer.style.display = 'block';
+
+                    // Redirigir después de 2 segundos
+                    setTimeout(() => {
+                        window.location.href = 'views/Productos.html'; // Cambia 'pagina_destino.html' a la página a la que quieres redirigir
+                    }, 2000);
                 }
 
                 // Desaparecer el alert después de 5 segundos

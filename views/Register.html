@@ -124,6 +124,8 @@
                     alertContainer.classList.add('alert-success');
                     alertContainer.innerText = result.success;
                     alertContainer.style.display = 'block';
+
+                    document.getElementById('registerForm').reset(); 
                 }
 
                 // Desaparecer la alerta después de 5 segundos
