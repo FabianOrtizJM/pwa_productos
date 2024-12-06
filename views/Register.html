@@ -74,7 +74,7 @@
 </head>
 
 <body>
-    <div id="alertContainer" class="alert alert-danger mt-3"></div> <!-- Alert fuera del login-container -->
+    <div id="alertContainer" class="alert mt-3"></div>
     <div class="login-container">
         <div class="login-logo">
             <img src="../img/logo.png" alt="Logo">
@@ -82,7 +82,7 @@
         <h2>Registro</h2>
         <form id="registerForm">
             <div class="mb-3">
-                <input type="text" name="username" class="form-control" placeholder="Nombre de usuario" required>
+                <input type="text" name="name" class="form-control" placeholder="Nombre de usuario" required>
             </div>
             <div class="mb-3">
                 <input type="email" name="email" class="form-control" placeholder="Correo" required>
@@ -101,42 +101,50 @@
         document.getElementById('registerForm').addEventListener('submit', async function (e) {
             e.preventDefault();
             const formData = new FormData(this);
-            const alertContainer = document.getElementById('alertContainer');
-            
-            try {
-                // Cambia la URL a tu servidor local si no lo has hecho
-                const response = await fetch("http://localhost:8000/test.php", {
-                    method: 'POST',
-                    body: formData
-                });
-                const result = await response.json();
-                
-                // Limpiar cualquier alerta anterior
-                alertContainer.style.display = 'none';
-                
-                if (result.error) {
-                    alertContainer.classList.remove('alert-success');
-                    alertContainer.classList.add('alert-danger');
-                    alertContainer.innerText = result.error;
-                    alertContainer.style.display = 'block';
-                } else {
-                    alertContainer.classList.remove('alert-danger');
-                    alertContainer.classList.add('alert-success');
-                    alertContainer.innerText = result.success;
-                    alertContainer.style.display = 'block';
 
-                    document.getElementById('registerForm').reset(); 
+            const data = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                password: formData.get('password')
+            };
+            const alertContainer = document.getElementById('alertContainer');
+
+            try {
+                const response = await fetch("http://localhost:3000/api/users", {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                alertContainer.style.display = 'none'; // Limpiar alertas anteriores
+                if (result.error) {
+                    alertContainer.className = 'alert alert-danger';
+                    alertContainer.innerText = result.error;
+                } else {
+                    alertContainer.className = 'alert alert-success';
+                    alertContainer.innerText = result.success || 'Usuario registrado correctamente.';
+                    document.getElementById('registerForm').reset();
                 }
 
-                // Desaparecer la alerta después de 5 segundos
+                alertContainer.style.display = 'block';
+
                 setTimeout(() => {
                     alertContainer.style.display = 'none';
-                }, 5000);  // 5000ms = 5 segundos
+                }, 5000);
+
             } catch (error) {
                 console.error('Error:', error);
+                alertContainer.className = 'alert alert-danger';
+                alertContainer.innerText = 'No se pudo conectar con el servidor. Inténtalo más tarde.';
+                alertContainer.style.display = 'block';
             }
         });
-    </script>    
+    </script>
 </body>
 
 </html>

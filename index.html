@@ -98,14 +98,22 @@
         document.getElementById('loginForm').addEventListener('submit', async function (e) {
             e.preventDefault();
             const formData = new FormData(this);
+            const data = {
+            email: formData.get('email'),
+            password: formData.get('password')
+            };
             const alertContainer = document.getElementById('alertContainer');
             
             try {
-                const response = await fetch("http://localhost:8000/login.php", {
+                const response = await fetch("http://localhost:3000/api/users/login", {
                     method: 'POST',
-                    body: formData
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
                 });
                 const result = await response.json();
+          
                 
                 // Limpiar cualquier alerta anterior
                 alertContainer.style.display = 'none';
@@ -113,17 +121,19 @@
                 if (result.error) {
                     alertContainer.classList.remove('alert-success');
                     alertContainer.classList.add('alert-danger');
-                    alertContainer.innerText = result.error;
+                    alertContainer.innerText = result.error || 'Hubo un error al iniciar sesión';
                     alertContainer.style.display = 'block';
                 } else {
+                    localStorage.setItem('token', result.token);
+                    //Para obtener el token es así: localStorage.getItem('token');
                     alertContainer.classList.remove('alert-danger');
                     alertContainer.classList.add('alert-success');
-                    alertContainer.innerText = result.success;
+                    alertContainer.innerText = result.success || 'Inicio de sesión exitoso';
                     alertContainer.style.display = 'block';
 
                     // Redirigir después de 2 segundos
                     setTimeout(() => {
-                        window.location.href = 'views/Productos.html'; // Cambia 'pagina_destino.html' a la página a la que quieres redirigir
+                        window.location.href = 'views/Productos/Productos.html'; 
                     }, 2000);
                 }
 

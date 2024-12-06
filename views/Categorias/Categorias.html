@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Categorías</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #ff0000, #0000ff);
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .category-container {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 800px;
+            margin: 5rem auto;
+        }
+
+
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-new-category {
+            background: linear-gradient(90deg, #4e54c8, #8f94fb);
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        .btn-new-category:hover {
+            background: linear-gradient(90deg, #33ccff, #00aaff);
+        }
+
+        .table thead th {
+            background: linear-gradient(90deg, #4e54c8, #8f94fb);
+            color: white;
+            border: none;
+        }
+
+        .table tbody tr td {
+            background: #f7f7f7;
+            border: none;
+        }
+
+        .table tbody tr {
+            border-bottom: 1px solid #ddd;
+        }
+
+        .table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        .action-icons .edit-icon {
+            color: orange;
+        }
+
+        .action-icons .delete-icon {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <body>
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">LP</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#">Categorías</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/views/Productos/Productos.html">Productos</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    
+        <div class="category-container">
+            <div class="category-header d-flex justify-content-between align-items-center">
+                <h1>Lista de Categorías</h1>
+                <a href="AddCategoria.html"><button class="btn btn-new-category">Nueva Categoría</button></a>
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="categoria-body">
+                    <!-- Aquí se agregarán las categorías dinámicamente -->
+                </tbody>
+            </table>
+        </div>
+        <!-- Bootstrap JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    
+        <script>
+            const API_URL = 'http://localhost:3000/api'; // URL de tu API local
+    
+            // Función para obtener las categorías
+            async function getCategorias() {
+                try {
+                    const response = await fetch(`${API_URL}/categories`);
+                    const categorias = await response.json();
+                    mostrarCategorias(categorias);
+                } catch (error) {
+                    console.error('Error al obtener las categorías:', error);
+                }
+            }
+    
+            // Función para mostrar las categorías en la tabla
+            function mostrarCategorias(categorias) {
+                const tbody = document.getElementById('categoria-body');
+                tbody.innerHTML = ''; // Limpiar la tabla antes de agregar las filas
+    
+                categorias.forEach(categoria => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${categoria.name}</td>
+                        <td>${categoria.description}</td>
+                        <td class="action-icons">
+                            <i class="bi bi-pencil-fill edit-icon" onclick="editarCategoria(${categoria.id})"></i>
+                            <i class="bi bi-trash-fill delete-icon" onclick="eliminarCategoria(${categoria.id})"></i>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+    
+            // Función para editar una categoría
+            function editarCategoria(id) {
+                console.log(`Editar categoría con ID: ${id}`);
+                // Redirigir a la página de edición de categoría con el ID
+                window.location.href = `EditCategoria.html?id=${id}`;
+
+            }
+    
+            // Función para eliminar una categoría
+            async function eliminarCategoria(id) {
+    if (confirm('¿Estás seguro de que deseas eliminar esta categoría?')) {
+        try {
+            const response = await fetch(`${API_URL}/categories/${id}`, {
+                method: 'DELETE',
+            });
+
+            // Check if the response has content
+            let result;
+            if (response.headers.get('content-length') > 0) {
+                result = await response.json();
+                console.log('Categoría eliminada:', result);
+            } else {
+                console.log('Categoría eliminada sin contenido en la respuesta');
+            }
+
+            getCategorias(); // Volver a cargar la lista de categorías
+        } catch (error) {
+            console.error('Error al eliminar la categoría:', error);
+        }
+    }
+}
+    
+            // Cargar las categorías al cargar la página
+            window.onload = getCategorias;
+        </script>
+    </body>
+    
+    </html>

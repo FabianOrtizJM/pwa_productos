@@ -2,10 +2,10 @@ const CACHE_NAME = 'crud-pwa-cache-v1';
 const urlsToCache = [
   '/',
   '/index.html',
-  '/AddCategoria.html',
-  '/AddProducto.html',
-  '/Categorias.html',
-  '/Productos.html',
+  'Categorias/AddCategoria.html',
+  'Productos/AddProducto.html',
+  'Categorias/Categorias.html',
+  'Productos/Productos.html',
   '/styles.css', // Si tienes un archivo de estilos
   '/api.js', // Archivo de funciones para interactuar con la API
 ];
