@@ -31,7 +31,7 @@
             position: absolute;
             top: -5vh;
             left: 50%;
-            transform: translate(-70%, -100%);
+            transform: translate(-70%, -70%);
         }
 
         .login-logo img {
@@ -62,11 +62,19 @@
 
         .alert {
             display: none;
+            position: fixed;
+            top: 80%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 400px;
+            z-index: 9999;
         }
     </style>
 </head>
 
 <body>
+    <div id="alertContainer" class="alert alert-danger mt-3"></div> <!-- Alert fuera del login-container -->
     <div class="login-container">
         <div class="login-logo">
             <img src="../img/logo.png" alt="Logo">
@@ -84,13 +92,17 @@
             </div>
             <button type="submit" class="btn btn-gradient w-100">Registrarse</button>
         </form>
-        <div id="alertContainer" class="alert alert-danger mt-3"></div>
+        <br>
+        <a href="../index.html" id="registro-link"><p>Iniciar Sesión</p></a>
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.getElementById('registerForm').addEventListener('submit', async function (e) {
             e.preventDefault();
             const formData = new FormData(this);
+            const alertContainer = document.getElementById('alertContainer');
+            
             try {
                 // Cambia la URL a tu servidor local si no lo has hecho
                 const response = await fetch("http://localhost:8000/test.php", {
@@ -98,22 +110,31 @@
                     body: formData
                 });
                 const result = await response.json();
-                const alertContainer = document.getElementById('alertContainer');
+                
+                // Limpiar cualquier alerta anterior
+                alertContainer.style.display = 'none';
+                
                 if (result.error) {
                     alertContainer.classList.remove('alert-success');
                     alertContainer.classList.add('alert-danger');
                     alertContainer.innerText = result.error;
+                    alertContainer.style.display = 'block';
                 } else {
                     alertContainer.classList.remove('alert-danger');
                     alertContainer.classList.add('alert-success');
                     alertContainer.innerText = result.success;
+                    alertContainer.style.display = 'block';
                 }
-                alertContainer.style.display = 'block';
+
+                // Desaparecer la alerta después de 5 segundos
+                setTimeout(() => {
+                    alertContainer.style.display = 'none';
+                }, 5000);  // 5000ms = 5 segundos
             } catch (error) {
                 console.error('Error:', error);
             }
         });
-    </script>
+    </script>    
 </body>
 
 </html>
