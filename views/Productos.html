@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Productos</title>
     <!-- Bootstrap CSS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -47,7 +49,7 @@
         }
 
         .table thead th {
-            background: linear-gradient(90deg, #4e54c8, #8f94fb);
+            background:  #4e54c8;
             color: white;
             border: none;
         }
@@ -72,6 +74,18 @@
         .action-icons .delete-icon {
             color: red;
         }
+
+        @media (max-width: 768px) {
+            .product-container {
+                padding: 1rem;
+            }
+
+            .btn-new-product {
+                font-size: 0.9rem;
+                padding: 0.4rem 0.8rem;
+            }
+        }
+
     </style>
 </head>
 
@@ -79,7 +93,6 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">LP</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -92,63 +105,108 @@
                     <li class="nav-item">
                         <a class="nav-link active" href="#">Productos</a>
                     </li>
+                    <!-- Botón de logout -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="../index.html">LogOut</a>
+                    </li>
                 </ul>
             </div>
         </div>
     </nav>
+    
 
     <div class="product-container">
         <div class="product-header d-flex justify-content-between align-items-center">
             <h1>Lista de Productos</h1>
             <a href="AddProducto.html"><button class="btn btn-new-product">Nuevo Producto</button></a>
         </div>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Descripción</th>
-                    <th>Precio</th>
-                    <th>Categoría</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Producto 1</td>
-                    <td>Descripción del producto 1</td>
-                    <td>100</td>
-                    <td>Electrónica</td>
-                    <td class="action-icons">
-                        <i class="bi bi-pencil-fill edit-icon"></i>
-                        <i class="bi bi-trash-fill delete-icon"></i>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Producto 2</td>
-                    <td>Descripción del producto 2</td>
-                    <td>200.5</td>
-                    <td>Muebles</td>
-                    <td class="action-icons">
-                        <i class="bi bi-pencil-fill edit-icon"></i>
-                        <i class="bi bi-trash-fill delete-icon"></i>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Producto 3</td>
-                    <td>Descripción del producto 3</td>
-                    <td>50</td>
-                    <td>Ropa</td>
-                    <td class="action-icons">
-                        <i class="bi bi-pencil-fill edit-icon"></i>
-                        <i class="bi bi-trash-fill delete-icon"></i>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Stock</th>
+                        <th>Precio</th>
+                        <th>Categoría</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Aquí se llenarán los productos desde la API -->
+                </tbody>
+            </table>
+        </div>        
     </div>
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <script>
+        const API_URL = "http://localhost:3000/api"; // Cambia si es necesario
+
+// Función para cargar productos desde la API
+function cargarProductos() {
+  $.ajax({
+    url: `${API_URL}/products`, // URL de tu API
+    method: "GET",
+    dataType: "json",
+    success: function (respuesta) {
+      const tbody = $("table tbody");
+
+      // Vaciar el cuerpo de la tabla antes de llenarlo
+      tbody.empty();
+
+      // Iterar sobre los productos y añadirlos como filas en la tabla
+      respuesta.data.forEach((producto) => {
+        tbody.append(`
+          <tr>
+            <td>${producto.name}</td>
+            <td>${producto.stock || 'Sin descripción'}</td>
+            <td>${producto.price}</td>
+            <td>${producto.Category.name}</td>
+            <td class="action-icons">
+              <i class="bi bi-pencil-fill edit-icon" onclick="editarProducto(${producto.id})"></i>
+              <i class="bi bi-trash-fill delete-icon" onclick="eliminarProducto(${producto.id})"></i>
+            </td>
+          </tr>
+        `);
+      });
+    },
+    error: function (err) {
+      console.error("Error al cargar los productos:", err);
+    },
+  });
+}
+
+// Llamar a la función para cargar los productos al cargar la página
+$(document).ready(function () {
+  cargarProductos();
+});
+
+// Funciones para editar y eliminar productos (deberás implementar estas funciones)
+function editarProducto(id) {
+    // Redirigir a la página de edición con el ID en la URL
+    window.location.href = `./EditProductos.html?id=${id}`;
+}
+
+function eliminarProducto(id) {
+    if (confirm("¿Estás seguro de que deseas eliminar este producto?")) {
+    $.ajax({
+      url: `${API_URL}/products/${id}`,
+      method: "DELETE",
+      dataType: "json",
+      success: function (response) {
+        alert("Producto eliminado con éxito.");
+        cargarProductos(); // Recargar la lista de productos después de eliminar
+      },
+      error: function (error) {
+        alert("Hubo un error al eliminar el producto.");
+        console.error("Error:", error);
+      },
+    });
+  }
+}
+
+    </script>
 </body>
 
 </html>

@@ -76,7 +76,7 @@
     </style>
 </head>
 
-<body>
+<<body>
     <div class="form-container">
         <!-- Botón de regreso -->
         <a href="Productos.html">
@@ -85,9 +85,9 @@
             </button>
         </a>
         <div class="form-header">
-            <h1>Crear Producto</h1>
+            <h1>Editar Producto</h1>
         </div>
-        <form id="formCrearProducto">
+        <form id="formEditarProducto">
             <div class="mb-3">
                 <input type="text" class="form-control" id="nombreProducto" placeholder="Nombre del Producto" required>
             </div>
@@ -102,7 +102,7 @@
                     <option value="" disabled selected>Seleccione una categoría</option>
                 </select>
             </div>
-            <button type="submit" class="btn btn-submit">Guardar Producto</button>
+            <button type="submit" class="btn btn-submit">Guardar Cambios</button>
         </form>
     </div>
     <!-- Bootstrap JS -->
@@ -111,23 +111,18 @@
     <script>
         $(document).ready(function () {
           const API_URL = "http://localhost:3000/api"; // Cambia si es necesario
-          
+          const productId = new URLSearchParams(window.location.search).get("id"); // Obtener ID de la URL
+
           // Función para cargar categorías desde la API
           function cargarCategorias() {
             $.ajax({
-              url: `${API_URL}/categories`, // URL de tu API
+              url: `${API_URL}/categories`,
               method: "GET",
               dataType: "json",
               success: function (categorias) {
                 const select = $("#categoriaProducto");
-
-                // Vaciar el select antes de llenarlo
                 select.empty();
-
-                // Añadir la opción predeterminada
                 select.append('<option value="" disabled selected>Seleccione una categoría</option>');
-
-                // Iterar sobre las categorías y añadirlas como opciones
                 categorias.forEach((categoria) => {
                   select.append(
                     `<option value="${categoria.id}">${categoria.name}</option>`
@@ -140,58 +135,83 @@
             });
           }
 
-          // Llamar a la función para cargar las categorías al cargar la página
+          // Función para cargar los datos del producto
+          function cargarProducto(id) {
+            $.ajax({
+                url: `${API_URL}/products`,
+                method: "GET",
+                dataType: "json",
+                success: function (response) {
+                console.log("Productos cargados:", response);
+
+                // Buscar el producto con el ID correcto
+                const producto = response.data.find((p) => p.id == id);
+
+                if (producto) {
+                    // Rellenar los campos con los datos del producto
+                    $("#nombreProducto").val(producto.name);
+                    $("#stockProducto").val(producto.stock);
+                    $("#precioProducto").val(producto.price);
+                    $("#categoriaProducto").val(producto.categoryId);
+                } else {
+                    alert("Producto no encontrado.");
+                    window.location.href = "Productos.html"; // Redirigir si no se encuentra
+                }
+                },
+                error: function (err) {
+                console.error("Error al cargar los productos:", err);
+                },
+            });
+            }
+
+
+          // Llamar a las funciones al cargar la página
           cargarCategorias();
+          if (productId) {
+            cargarProducto(productId);
+          } else {
+            alert("No se encontró el ID del producto.");
+            window.location.href = "Productos.html"; // Redirigir si no hay ID
+          }
 
-          // Enviar el formulario para crear un producto
-          $("#formCrearProducto").submit(function (e) {
-            e.preventDefault(); // Evitar el comportamiento por defecto del formulario
+          // Enviar los datos editados
+          $("#formEditarProducto").submit(function (e) {
+            e.preventDefault();
 
-            // Obtener los datos del formulario
             const nombreProducto = $("#nombreProducto").val();
+            const stockProducto = $("#stockProducto").val();
             const precioProducto = $("#precioProducto").val();
             const categoriaProducto = $("#categoriaProducto").val();
-            const stockProducto = $("#stockProducto").val(); // Obtener el stock
 
-            // Verificar que todos los campos están llenos
-            if (!nombreProducto || !precioProducto || !categoriaProducto || !stockProducto) {
+            if (!nombreProducto || !stockProducto || !precioProducto || !categoriaProducto) {
               alert("Todos los campos son obligatorios.");
               return;
             }
 
-            // Crear el objeto del producto
-            const nuevoProducto = {
+            const productoEditado = {
               name: nombreProducto,
+              stock: stockProducto,
               price: precioProducto,
               categoryId: categoriaProducto,
-              stock: stockProducto // Añadir el stock al objeto
             };
 
-            // Enviar los datos al backend para crear el producto
             $.ajax({
-              url: `${API_URL}/products`, // URL para crear el producto
-              method: "POST",
+              url: `${API_URL}/products/${productId}`,
+              method: "PUT",
               contentType: "application/json",
-              data: JSON.stringify(nuevoProducto),
+              data: JSON.stringify(productoEditado),
               success: function (response) {
-                if (response.success) {
-                  alert("Producto creado exitosamente");
-                  //window.location.href = './Productos.html';
-                  // Limpiar el formulario o redirigir a la lista de productos
-                  $("#formCrearProducto")[0].reset();
-                } else {
-                  alert("Error al crear el producto.");
-                }
+                alert("Producto actualizado exitosamente.");
+                window.location.href = "Productos.html";
               },
               error: function (err) {
-                console.error("Error al crear el producto:", err);
-                alert("Hubo un error al crear el producto.");
-              }
+                console.error("Error al actualizar el producto:", err);
+                alert("Hubo un error al actualizar el producto.");
+              },
             });
           });
         });
       </script>
-      
 </body>
 
 </html>
